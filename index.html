@@ -1,0 +1,94 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="utf-8">  
+<title>Funding Calculator Demo</title>  
+<style>  
+  body { font-family: system-ui, sans-serif; background: #0b1220; color: #fff;  
+         display: flex; justify-content: center; padding: 40px; margin: 0; }  
+  .card { background: #131c2e; border-radius: 16px; padding: 32px;  
+          max-width: 640px; width: 100%; }  
+  h1 { font-size: 22px; margin: 0 0 4px; }  
+  .sub { color: #9aa7bd; font-size: 14px; margin-bottom: 28px; }  
+  .row { margin-bottom: 24px; }  
+  .row label { display: flex; justify-content: space-between;  
+               font-size: 14px; color: #c7d0e0; margin-bottom: 8px; }  
+  .row label b { color: #fff; }  
+  input[type=range] { width: 100%; accent-color: #e63946; }  
+  select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #2a3answer552;  
+           background: #0b1220; color: #fff; }  
+  .results { background: #0b1220; border-radius: 12px; padding: 20px;  
+             display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }  
+  .stat span { font-size: 12px; color: #9aa7bd; text-transform: uppercase; }  
+  .stat b { font-size: 20px; display: block; margin-top: 4px; }  
+  .badge { grid-column: 1 / -1; text-align: center; padding: 10px;  
+           border-radius: 8px; font-weight: 600; background: #1f7a3a; }  
+  .badge.review { background: #a06a1f; }  
+  .badge.out { background: #8f2a2a; }  
+  button { width: 100%; margin-top: 20px; padding: 14px; border: 0;  
+           border-radius: 10px; background: #e63946; color: #fff;  
+           font-size: 16px; font-weight: 700; cursor: pointer; }  
+  .fine { font-size: 11px; color: #6b7answer88; margin-top: 14px; text-align: center; }  
+</style>  
+</head>  
+<body>  
+<div class="card">  
+  <h1>Build your funding offer</h1>  
+  <p class="sub">Move the sliders to see your indicative terms — instant, no obligation.</p>  
+  
+  <div class="row">  
+    <label>Average monthly card takings <b id="vTak">£20,000</b></label>  
+    <input type="range" id="tak" min="3000" max="200000" step="1000" value="20000">  
+  </div>  
+  
+  <div class="row">  
+    <label>Funding amount <b id="vAmt">£25,000</b></label>  
+    <input type="range" id="amt" min="1000" max="250000" step="1000" value="25000">  
+  </div>  
+  
+  <div class="row">  
+    <label>Repayment share of daily card sales <b id="vPct">12%</b></label>  
+    <input type="range" id="pct" min="5" max="25" value="12">  
+  </div>  
+  
+  <div class="row">  
+    <label>Years trading</label>  
+    <select id="yrs"><option>Under 1</option><option selected>1–3</option>  
+      <option>3–5</option><option>5+</option></select>  
+  </div>  
+  
+  <div class="results">  
+    <div class="stat"><span>Est. daily repayment</span><b id="rDaily">£0</b></div>  
+    <div class="stat"><span>Est. term</span><b id="rTerm">0 mo</b></div>  
+    <div class="stat"><span>Indicative total repayable</span><b id="rTotal">£0</b></div>  
+    <div class="stat"><span>Factor rate</span><b>1.30</b></div>  
+    <div class="badge" id="rBadge">Likely eligible</div>  
+  </div>  
+  
+  <button>Choose this offer →</button>  
+  <p class="fine">Indicative only. All funding subject to eligibility, underwriting and approval.</p>  
+</div>  
+  
+<script>  
+const gbp = n => new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(n);  
+const $ = id => document.getElementById(id);  
+function calc(){  
+  const tak=+$('tak').value, amt=+$('amt').value, pct=+$('pct').value;  
+  $('vTak').textContent=gbp(tak); $('vAmt').textContent=gbp(amt); $('vPct').textContent=pct+'%';  
+  const daily = tak/30*pct/100;  
+  const factor = 1.30;  
+  const total = amt*factor;  
+  const months = total/daily/30;  
+  $('rDaily').textContent=gbp(daily);  
+  $('rTotal').textContent=gbp(total);  
+  $('rTerm').textContent=(months<24?months.toFixed(1):Math.round(months))+' mo';  
+  const ratio = amt/tak, b=$('rBadge');  
+  if(ratio<=1.0){b.textContent='Likely eligible';b.className='badge';}  
+  else if(ratio<=1.5){b.textContent='May need review';b.className='badge review';}  
+  else{b.textContent='Outside typical range';b.className='badge out';}  
+}  
+document.querySelectorAll('input,select').forEach(el=>el.oninput=calc);  
+calc();  
+</script>  
+</body>  
+</html>
